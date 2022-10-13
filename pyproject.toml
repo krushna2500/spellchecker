@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "spellchecker-refactor"
+version = "0.1.0"
+description = ""
+authors = ["krushna Panchvishe <krushnap@cdac.in>"]
+readme = "README.md"
+packages = [{include = "spellchecker_refactor"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.13.0"
+nltk = "^3.7"
+spacy = "^3.0.5"
+elasticsearch = "7.17.3"
+abydos = "^0.5.0"
+collection = "^0.1.6"
+
+[tool.poetry.dependencies.en_core_web_sm]
+url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
