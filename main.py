@@ -34,7 +34,6 @@ if submit:
         nysiis_code_name = nysiis(name)
 
         target_index = "spell_checker_index"
-
         check = matcher_name_check(client, target_index, name)
         name_check = []
         for i in check:
@@ -57,20 +56,27 @@ if submit:
             for i in results:
                 sim_engwords.append(i['_source']['word'])
 
+        print("####################################################", propn_list, nysiis_code_name)
+        print("****************************************************", sim_words)
+
+
+
         similar_word_preference = {}
         cmp = Levenshtein()
 
         for word in sim_words:
             if name in propn_list:
                 name = removeConsecutiveDuplicates(name, k=3)
-                if len(name) < 5 and dist_cosine(nysiis(word), nysiis(name)) == 0 and int(cmp.alignment(word, name)[0]) < 2 and name != word:
+                if len(name) < 5 and dist_cosine(nysiis(word), nysiis_code_name) == 0 and int(cmp.alignment(word, name)[0]) < 2 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
-                if 5 <= len(name) < 7 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
+                if 5 <= len(name) < 7 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif 7 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
+                elif 7 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif len(name) > 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and int(cmp.alignment(word, name)[0]) < 5 and name != word:
+                elif len(name) > 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 5 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
+
+        # for name 
 
 
         sort_sim_word = sorted(similar_word_preference.items(), key=lambda item: item[1])
