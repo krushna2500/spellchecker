@@ -57,11 +57,6 @@ if submit:
             for i in results:
                 sim_engwords.append(i['_source']['word'])
 
-
-        print(sim_words)
-        print(sim_engwords)
- 
-
         similar_word_preference = {}
         cmp = Levenshtein()
 
@@ -69,32 +64,16 @@ if submit:
             if name in propn_list:
                 name = removeConsecutiveDuplicates(name, k=3)
                 if len(name) < 5 and dist_cosine(nysiis(word), nysiis(name)) == 0 and int(cmp.alignment(word, name)[0]) < 2 and name != word:
-                # if len(name) < 8 and dist_cosine(word, name) < 0.3 and Levenshtein(word, name) < 3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
                 if 5 <= len(name) < 7 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
-                # if len(name) < 8 and dist_cosine(word, name) < 0.3 and levenshteinDistanceDP(word, name) < 3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
                 elif 7 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
-                # elif 8 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.5 and levenshteinDistanceDP(word, name) < 3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
                 elif len(name) > 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and int(cmp.alignment(word, name)[0]) < 5 and name != word:
-                # elif len(name) > 9 and dist_cosine(word, name) < 0.3 and levenshteinDistanceDP(word, name) < 3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
-            # else:
-            #     if len(name) < 8 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and levenshteinDistanceDP(word,  name) < 3:
-            #         similar_word_preference[word] = dist_cosine(nysiis(word), nysiis(name))
-            #     elif 8 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and levenshteinDistanceDP(word, name) < 3:
-            #         similar_word_preference[word] = dist_cosine(nysiis(word), nysiis(name))
-            #     elif len(name) > 9 and dist_cosine(nysiis(word), nysiis(name)) < 0.3 and levenshteinDistanceDP(word, name) < 5:
-            #         similar_word_preference[word] = dist_cosine(nysiis(word), nysiis(name))
 
-            # print(name, word, levenshteinDistanceDP(name, word), dist_cosine(name, word), dist_cosine(nysiis(name), nysiis(word)))
 
         sort_sim_word = sorted(similar_word_preference.items(), key=lambda item: item[1])
-        # print(sort_sim_word)
-        # print(similar_word_preference)
-
-        # print(similar_word_preference)
 
 
         sim_word_score = []
@@ -109,7 +88,4 @@ if submit:
         a = add_values_in_dict(sample_dict, key, list_of_values)
         if len(a) != 0:
             st.write(a)
-            # st.write(a | eng_mis_corrected)
-            # st.write(eng_mis_corrected)
-        # st.write(add_values_in_dict(sample_dict, key, list_of_values))
 
