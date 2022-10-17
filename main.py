@@ -34,7 +34,7 @@ if submit:
     for name in propn_list:
         nysiis_code_name = nysiis(name)
 
-        target_index = "spell_checker_index"
+        target_index = "spell_checker_alias"
         check = matcher_name_check(client, target_index, name)
         name_check = []
         for i in check:

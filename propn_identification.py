@@ -1,5 +1,6 @@
 import spacy
 import streamlit as st
+import csv
 from functions import removeConsecutiveDuplicates
 import nltk
 from nltk.corpus import words
@@ -13,7 +14,13 @@ from collections.abc import Iterable
 nltk.download('words')
 nltk.download('punkt')
 
-data = set(map(lambda x: x.lower(), list(words.words())))
+# data = set(map(lambda x: x.lower(), list(words.words())))
+data = []
+with open('eng_words_uk_us.csv', newline='') as inputfile:
+    for row in csv.reader(inputfile):
+        data.append(row[0])
+
+
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 def propn_identification_pos(text):
