@@ -22,10 +22,11 @@ sentences = nltk.sent_tokenize(text)  # whole paragraph break into sentence.
 data = set(map(lambda x: x.lower(), list(words.words())))
 submit = form.form_submit_button('Submit')
 
+propn_list = propn_identification_without_pos(text)
+print("*****************************************************", propn_list)
 
 
 if submit:
-    propn_list = propn_identification_without_pos(text)
     st.sidebar.write(propn_list)
     eng_mis_corrected = {}
 
@@ -54,12 +55,12 @@ if submit:
                 sim_words.append(i['_source']['name'])
 
             for i in results:
-                sim_engwords.append(i['_source']['word'])
+                sim_engwords.append(i['_source']['worde'])
 
         print("####################################################", propn_list, nysiis_code_name)
         print("****************************************************", sim_words)
 
-
+        st.write(nysiis_code_name)
 
         similar_word_preference = {}
         cmp = Levenshtein()
@@ -76,7 +77,6 @@ if submit:
                 elif len(name) > 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 5 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
 
-        # for name 
 
 
         sort_sim_word = sorted(similar_word_preference.items(), key=lambda item: item[1])
@@ -88,7 +88,7 @@ if submit:
 
         sample_dict = {}
         key = name
-        list_of_values = sim_word_score[0:4]
+        list_of_values = sim_word_score[0:10]
 
 
         a = add_values_in_dict(sample_dict, key, list_of_values)
