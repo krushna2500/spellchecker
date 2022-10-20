@@ -66,6 +66,17 @@ def create_query_eng_words(text):
             }}
 
 
+def create_query_fuzzy_elastic(text):
+    return {
+  "query": {
+    "fuzzy": {
+      "name":{
+        "value": f"{text}",
+        "fuzziness": "AUTO",
+        "prefix_length": 1
+      }
+    }}
+}
 
 
 
@@ -83,5 +94,11 @@ def matcher_name_check(client, trgt_index_name, name):
 
 def matcher_engword(client, trgt_index_name, word):
     query_body = create_query_eng_words(word)
+    response = scan(client, query_body, index = trgt_index_name, preserve_order=True)
+    return response
+
+
+def matcher_fuzzy_elastic(client, trgt_index_name, name):
+    query_body = create_query_fuzzy_elastic(name)
     response = scan(client, query_body, index = trgt_index_name, preserve_order=True)
     return response

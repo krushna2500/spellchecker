@@ -18,7 +18,7 @@ nltk.download('punkt')
 data = []
 with open('eng_words_uk_us.csv', newline='') as inputfile:
     for row in csv.reader(inputfile):
-        data.append(row[0])
+        data.append(row[0].lower())
 
 
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])

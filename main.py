@@ -7,6 +7,7 @@ from nltk.corpus import words
 from abydos.phonetic import nysiis
 from abydos.distance import dist_cosine
 from abydos.distance import Levenshtein
+from abydos.phonetic import RefinedSoundex
 from elastic_injection_query import *
 
 try:
@@ -33,6 +34,8 @@ if submit:
     client = connect_elasticsearch()
     for name in propn_list:
         nysiis_code_name = nysiis(name)
+        soundex = RefinedSoundex()
+        soundex_embb_name = soundex.encode(name)
 
         target_index = "spell_checker_alias"
         check = matcher_name_check(client, target_index, name)
@@ -49,14 +52,16 @@ if submit:
         sim_engwords = []
         eng_misspelled_words = []
         if len(name) != 0 and len(name_check) == 0:  # We can use try expect also
-            results = matcher(client, target_index, nysiis_code_name)
+            # results = matcher(client, target_index, nysiis_code_name)
+            results = matcher_fuzzy_elastic(client, target_index, name)
 
             for i in results:
-                sim_words.append(i['_source']['name'])
+                sim_words.append(i['_source']['name'].lower())
 
             for i in results:
-                sim_engwords.append(i['_source']['worde'])
-
+                sim_engwords.append(i['_source']['worde'].lower())
+        sim_words = list(set(sim_words))
+        sim_engwords = list(set(sim_engwords))
         print("####################################################", propn_list, nysiis_code_name)
         print("****************************************************", sim_words)
 
@@ -65,23 +70,34 @@ if submit:
         similar_word_preference = {}
         cmp = Levenshtein()
 
+        # for word in sim_words:
+        #     if name in propn_list:
+        #         name = removeConsecutiveDuplicates(name, k=3)
+        #         if len(name) < 5 and dist_cosine(nysiis(word), nysiis_code_name) == 0 and int(cmp.alignment(word, name)[0]) < 2 and name != word:
+        #             similar_word_preference[word] = dist_cosine(word, name)
+        #         if 5 <= len(name) < 7 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
+        #             similar_word_preference[word] = dist_cosine(word, name)
+        #         elif 7 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
+        #             similar_word_preference[word] = dist_cosine(word, name)
+        #         elif len(name) > 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 5 and name != word:
+        #             similar_word_preference[word] = dist_cosine(word, name)
+
+
         for word in sim_words:
             if name in propn_list:
                 name = removeConsecutiveDuplicates(name, k=3)
-                if len(name) < 5 and dist_cosine(nysiis(word), nysiis_code_name) == 0 and int(cmp.alignment(word, name)[0]) < 2 and name != word:
+                if len(name) < 5 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word):
                     similar_word_preference[word] = dist_cosine(word, name)
-                if 5 <= len(name) < 7 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
+                elif 5 <= len(name) < 7 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word):
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif 7 <= len(name) <= 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 3 and name != word:
+                elif 7 <= len(name) <= 9 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word):
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif len(name) > 9 and dist_cosine(nysiis(word), nysiis_code_name) < 0.3 and int(cmp.alignment(word, name)[0]) < 5 and name != word:
+                elif len(name) > 9 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word) < 0.5:
                     similar_word_preference[word] = dist_cosine(word, name)
 
 
-
-        sort_sim_word = sorted(similar_word_preference.items(), key=lambda item: item[1])
-
-
+        sort_sim_word = (sorted(similar_word_preference.items(), key=lambda item: item[1]))
+        print(sort_sim_word)
         sim_word_score = []
         for i in sort_sim_word:
             sim_word_score.append(i[0])
