@@ -63,7 +63,7 @@ if submit:
         sim_words = list(set(sim_words))
         sim_engwords = list(set(sim_engwords))
         print("####################################################", propn_list, nysiis_code_name)
-        print("****************************************************", sim_words)
+        # print("****************************************************", sim_words)
 
         st.write(nysiis_code_name)
 
@@ -86,13 +86,13 @@ if submit:
         for word in sim_words:
             if name in propn_list:
                 name = removeConsecutiveDuplicates(name, k=3)
-                if len(name) < 5 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word):
+                if len(name) < 5 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word) < 0.3:
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif 5 <= len(name) < 7 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word):
+                elif 5 <= len(name) < 7 and dist_cosine(soundex.encode(word), soundex_embb_name) < 0.3 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif 7 <= len(name) <= 9 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word):
+                elif 7 <= len(name) <= 9 and dist_cosine(soundex.encode(word), soundex_embb_name) < 0.5 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
-                elif len(name) > 9 and soundex.encode(word) == soundex_embb_name and name != word and dist_cosine(name, word) < 0.5:
+                elif len(name) > 9 and dist_cosine(soundex.encode(word), soundex_embb_name) < 0.5 and name != word:
                     similar_word_preference[word] = dist_cosine(word, name)
 
 
